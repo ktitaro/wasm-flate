@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wasm Flate Expo</title>
+</head>
+<body>
+  <h1>Check console for details</h1>
+
+  <script type="module">
+    import init, * as WasmFlate from './pkg/wasm_flate'
+
+    init().then(() => {
+      const data = JSON.stringify(
+        Object.fromEntries(
+          new Array(999).fill(0).map((_, idx) =>
+            ([`key-${idx}`, `$value-${idx}`]))
+        )
+      )
+
+      const dataLen = data.length
+      console.log(`Initial size = ${dataLen} bytes`)
+
+      const dataGzip = WasmFlate.gzip_encode(data)
+      const dataGzipLen = dataGzip.length
+      console.log(`Gzip encoded size = ${dataGzipLen} bytes`)
+      console.log(`Gzip saved ${((dataLen - dataGzipLen) * 100) / dataLen}%`)
+
+      const dataZlib = WasmFlate.zlib_encode(data)
+      const dataZlibLen = dataZlib.length
+      console.log(`Zlib encoded size = ${dataZlib.length} bytes`)
+      console.log(`Zlib saved ${((dataLen - dataZlibLen) * 100) / dataLen}%`)
+
+      const dataDeflate = WasmFlate.deflate_encode(data)
+      const dataDeflateLen = dataDeflate.length
+      console.log(`Deflate encoded size = ${dataDeflate.length} bytes`)
+      console.log(`Deflate saved ${((dataLen - dataDeflateLen) * 100) / dataLen}%`)
+    })
+  </script>
+</body>
+</html>
